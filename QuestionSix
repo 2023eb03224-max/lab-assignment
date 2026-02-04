@@ -1,0 +1,130 @@
+Question 6 [6 Points]
+
+Create a shell script metrics.sh that analyzes a text file input.txt.The script should display:
+• Longest word
+• Shortest word
+• Average word length
+• Total number of unique wordsUse pipes and commands such as tr, sort, uniq, wc.
+
+=================================================
+==================================================================
+metrics.sh
+
+#!/bin/bash
+
+# Convert all non‑letters to newlines, remove empties, normalize words
+words=$(tr -cs 'A-Za-z' '\n' < input.txt | tr 'A-Z' 'a-z')
+
+# Longest word
+longest=$(echo "$words" | awk '{ if (length > max) { max = length; word = $0 } } END { print word }')
+
+# Shortest word
+shortest=$(echo "$words" | awk 'NR==1 { min = length; word = $0 } { if (length < min) { min = length; word = $0 } } END { print word }')
+
+# Average word length
+avg=$(echo "$words" | awk '{ total += length; count++ } END { if (count>0) printf "%.2f", total/count }')
+
+# Total number of unique words
+unique=$(echo "$words" | sort | uniq | wc -l)
+
+echo "Longest word: $longest"
+echo "Shortest word: $shortest"
+echo "Average word length: $avg"
+echo "Total unique words: $unique"
+
+==============
+Normalize text into one word per line
+Code
+tr -cs 'A-Za-z' '\n'
+----------------------------------
+======================================================
+
+Sample input.txt
+
+Shell scripting is powerful and fun.
+Writing scripts improves automation and productivity.
+========================
+
+Step 1: Normalize text into words
+Your script converts all non‑letters into newlines and lowercases everything.
+The resulting word list becomes:
+
+shell
+scripting
+is
+powerful
+and
+fun
+writing
+scripts
+improves
+automation
+and
+productivity
+==================================================
+Step 2: Longest word
+
+Lengths:
+
+shell → 5
+scripting → 9
+is → 2
+powerful → 8
+and → 3
+fun → 3
+writing → 7
+scripts → 7
+improves → 8
+automation → 10
+productivity → 12
+====================================
+Longest word → productivity
+ Step 3: Shortest word
+Shortest is:
+is (2 letters)
+
+========================================
+Step 4: Average word length
+Total characters:
+shell (5)
+scripting (9)
+is (2)
+powerful (8)
+and (3)
+fun (3)
+writing (7)
+scripts (7)
+improves (8)
+automation (10)
+and (3)
+productivity (12)
+==========================================
+Sum = 77 characters
+Word count = 12
+ 
+Average = 77 / 12 = 6.42
+======================================
+Step 5: Unique word count
+Unique words:
+
+
+shell
+scripting
+is
+powerful
+and
+fun
+writing
+scripts
+improves
+automation
+productivity
+Count = 11
+============================================
+Final Output
+
+Longest word: productivity
+Shortest word: is
+Average word length: 6.42
+Total unique words: 11
+=================================================================
