@@ -1,0 +1,174 @@
+Question 2 [6 Points]
+You are given a log file containing entries in the format:
+YYYY-MM-DD HH:MM:SS LEVEL MESSAGE
+
+Example:
+
+2025-01-12 10:15:22 INFO System started
+2025-01-12 10:16:01 ERROR Disk not found
+2025-01-12 10:16:45 WARNING High memory usage
+2025-01-12 10:17:10 ERROR Network timeout
+
+Requirements:
+
+1. The script must accept the log file name as a command-line argument.
+2. Validate that the file exists and is readable.
+3. Count and display:
+
+  - Total number of log entries
+  - Number of INFO, WARNING, and ERROR messages
+
+4. Display the most recent ERROR message.
+5. Generate a report file named logsummary_<date>.txt.
+6. Handle errors gracefully with meaningful messages.
+
+=======================
+#!/bin/bash
+
+# -------------------------------
+# 1. Validate command-line input
+# -------------------------------
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <logfile>"
+    exit 1
+fi
+
+LOGFILE="$1"
+
+# -------------------------------
+# 2. Validate file existence/readability
+# -------------------------------
+if [ ! -e "$LOGFILE" ]; then
+    echo "Error: File '$LOGFILE' does not exist."
+    exit 1
+fi
+
+if [ ! -r "$LOGFILE" ]; then
+    echo "Error: File '$LOGFILE' is not readable."
+    exit 1
+fi
+
+# -------------------------------
+# 3. Count log entries and levels
+# -------------------------------
+total=$(wc -l < "$LOGFILE")
+info=$(grep -c " INFO " "$LOGFILE")
+warning=$(grep -c " WARNING " "$LOGFILE")
+error=$(grep -c " ERROR " "$LOGFILE")
+
+# -------------------------------
+# 4. Most recent ERROR message
+# -------------------------------
+recent_error=$(grep " ERROR " "$LOGFILE" | tail -n 1)
+
+if [ -z "$recent_error" ]; then
+    recent_error="No ERROR messages found."
+fi
+
+# -------------------------------
+# 5. Generate report file
+# -------------------------------
+today=$(date +%Y-%m-%d)
+report_file="logsummary_${today}.txt"
+
+{
+    echo "Log Summary Report - $today"
+    echo "---------------------------"
+    echo "Log file: $LOGFILE"
+    echo ""
+    echo "Total log entries: $total"
+    echo "INFO messages: $info"
+    echo "WARNING messages: $warning"
+    echo "ERROR messages: $error"
+    echo ""
+    echo "Most recent ERROR message:"
+    echo "$recent_error"
+} > "$report_file"
+
+# -------------------------------
+# 6. Graceful completion message
+# -------------------------------
+echo "Report generated: $report_file"
+===================================================
+==================================================
+
+Test Log File
+2025-01-12 10:15:22 INFO System started
+2025-01-12 10:16:01 ERROR Disk not found
+2025-01-12 10:16:45 WARNING High memory usage
+2025-01-12 10:17:10 ERROR Network timeout
+2025-01-12 10:18:00 INFO User logged in
+2025-01-12 10:19:30 ERROR Database unreachable
+======================================================
+
+Simulated Script Execution
+./logsummary.sh system.log
+
+
+===========
+Step-by-step evaluation
+1. File validation
+File exists → OK
+File readable → OK
+No error messages.
+=============================
+2. Count total log entries
+There are 6 lines, so:
+Total log entries: 6
+===================================
+3. Count INFO, WARNING, ERROR
+INFO → 2
+
+WARNING → 1
+ERROR → 3
+Output:
+
+INFO messages: 2
+WARNING messages: 1
+ERROR messages: 3
+=================================
+
+Most recent ERROR message
+ERROR lines:
+2025-01-12 10:16:01 ERROR Disk not found
+2025-01-12 10:17:10 ERROR Network timeout
+2025-01-12 10:19:30 ERROR Database unreachable
+
+The most recent is the last one:
+
+Most recent ERROR message: 2025-01-12 10:19:30 ERROR Database unreachable
+=============================
+5. Report file generation
+Assume today is 2026‑02‑03.
+
+The script creates:
+logsummary_2026-02-03.txt
+=========================
+
+Contents of the file:
+Log Summary Report - 2026-02-03
+---------------------------
+Log file: system.log
+
+Total log entries: 6
+INFO messages: 2
+WARNING messages: 1
+ERROR messages: 3
+
+Most recent ERROR message:
+2025-01-12 10:19:30 ERROR Database unreachable
+======================
+
+6. Final console message
+Report generated: logsummary_2026-02-03.txt
+======================
+
+Final Output
+
+Total log entries: 6
+INFO messages: 2
+WARNING messages: 1
+ERROR messages: 3
+Most recent ERROR message: 2025-01-12 10:19:30 ERROR Database unreachable
+Report generated: logsummary_2026-02-03.txt
+
