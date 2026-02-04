@@ -1,0 +1,127 @@
+Question 8 [6 Points]
+
+Create a shell script bg_move.sh that accepts a directory path.
+• Move each file in the directory into a subdirectory named backup/
+• Perform each move operation in the background
+• Display the PID of each background process
+• Wait for all background processes to finishUse &, wait, $$, and $! variables.
+
+================================================
+bg_move.sh
+
+#!/bin/bash
+
+# Check argument
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <directory>"
+    exit 1
+fi
+
+DIR="$1"
+
+# Validate directory
+if [ ! -d "$DIR" ]; then
+    echo "Error: $DIR is not a directory."
+    exit 1
+fi
+
+# Create backup directory if missing
+mkdir -p "$DIR/backup"
+
+echo "Main script PID: $$"
+echo ""
+
+# Loop through files
+for file in "$DIR"/*; do
+    # Skip directories (including backup/)
+    if [ -f "$file" ]; then
+        mv "$file" "$DIR/backup/" &   # Run move in background
+        pid=$!                        # PID of background job
+        echo "Moving $(basename "$file") in background (PID: $pid)"
+    fi
+done
+
+echo ""
+echo "Waiting for all background processes to finish..."
+
+wait   # Wait for all background jobs
+
+echo "All background tasks completed."
+==================================================
+Moves each file into backup/
+mv "$file" "$DIR/backup/"
+
+ Runs each move in the background
+& sends the operation to the background.
+
+Displays PID of each background process
+$! gives the PID of the most recent background job.
+
+Shows the main script PID
+$$ prints the PID of the script itself.
+
+Waits for all background jobs
+wait blocks until all background tasks finish.
+
+===============================================
+=================================================
+
+Test Directory Structure
+Assume you have a folder called testdir:
+
+testdir/
+├── a.txt
+├── b.log
+├── c.data
+
+No backup/ folder exists yet.
+
+====================================================
+====================================================
+No backup/ folder exists yet.
+
+./bg_move.sh testdir
+======================================================
+
+Step-by-Step What Happens
+1. Script prints its own PID
+Example:
+Main script PID: 4821
+=========================================
+2. Script creates backup/ inside testdir
+New structure:
+
+testdir/
+├── backup/
+├── a.txt
+├── b.log
+├── c.data
+=============================================
+3. Script loops through files and moves each one in the background
+For each file:
+Moving a.txt in background (PID: 4823)
+Moving b.log in background (PID: 4824)
+Moving c.data in background (PID: 4825)
+
+Each PID is the background job created by mv &.
+===========================================
+
+4. Script waits for all background jobs
+
+Waiting for all background processes to finish...
+========================================================
+
+After all moves complete:
+
+All background tasks completed.
+================================================
+
+Final Directory Structure After Script Completes
+
+testdir/
+└── backup/
+    ├── a.txt
+    ├── b.log
+    └── c.data
+=====================================================
+
