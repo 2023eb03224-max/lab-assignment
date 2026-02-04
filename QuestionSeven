@@ -1,0 +1,144 @@
+Question 7 [6 Points]
+
+Write a shell script patterns.sh that reads a text file and:
+• Writes words containing ONLY vowels into vowels.txt
+• Writes words containing ONLY consonants into consonants.txt
+• Writes words containing both vowels and consonants but starting with a consonant into mixed.txt, Case should be ignored while checking patterns.
+
+===============================================
+===================================================
+
+patterns.sh
+
+#!/bin/bash
+
+# Normalize input: convert non‑letters to newlines, lowercase everything
+words=$(tr -cs 'A-Za-z' '\n' < input.txt | tr 'A-Z' 'a-z')
+
+# Empty output files
+> vowels.txt
+> consonants.txt
+> mixed.txt
+
+for w in $words
+do
+    # Word contains only vowels
+    if echo "$w" | grep -Eq '^[aeiou]+$'; then
+        echo "$w" >> vowels.txt
+
+    # Word contains only consonants
+    elif echo "$w" | grep -Eq '^[bcdfghjklmnpqrstvwxyz]+$'; then
+        echo "$w" >> consonants.txt
+
+    # Word starts with consonant AND contains both vowels and consonants
+    elif echo "$w" | grep -Eq '^[bcdfghjklmnpqrstvwxyz]' \
+         && echo "$w" | grep -Eq '[aeiou]' \
+         && echo "$w" | grep -Eq '[bcdfghjklmnpqrstvwxyz]'; then
+        echo "$w" >> mixed.txt
+    fi
+done
+
+======================================
+========================================
+Normalize text
+tr -cs 'A-Za-z' '\n'
+===================================
+Breaks text into clean words.
+
+ Lowercase everything
+Makes pattern matching case‑insensitive.
+
+ Only vowels
+^[aeiou]+$
+
+========================================
+Only consonants
+^[bcdfghjklmnpqrstvwxyz]+$
+
+===============================================
+========================================
+
+Sample input.txt
+
+Apple orange sky rhythm queue fly echo crypt
+====================================
+ script normalizes this into lowercase words:
+
+apple
+orange
+sky
+rhythm
+queue
+fly
+echo
+crypt
+
+
+================================
+Classification Rules Recap
+ONLY vowels → vowels.txt
+Pattern: ^[aeiou]+$
+
+ONLY consonants → consonants.txt
+Pattern: ^[bcdfghjklmnpqrstvwxyz]+$
+Mixed (starts with consonant, contains both) → mixed.txt
+Conditions:
+
+starts with consonant
+contains at least one vowel
+contains at least one consonant
+Word-by-word evaluation
+
+
+
+Word	Contains vowels	Contains consonants	Starts with consonant	Category
+apple	yes	yes	no (starts with vowel)	—
+orange	yes	yes	no	—
+sky	no (y not counted)	yes	yes	consonants.txt
+rhythm	no (y not counted)	yes	yes	consonants.txt
+queue	yes	yes	no	—
+fly	no (y not counted)	yes	yes	consonants.txt
+echo	yes	yes	no	—
+crypt	no (y not counted)	yes	yes	consonants.txt
+=======================================
+vowels.txt
+No words contain only vowels.
+<empty>
+============================
+
+consonants.txt
+sky
+rhythm
+fly
+crypt
+=============================
+
+mixed.txt
+A mixed word must:
+
+start with a consonant
+contain at least one vowel
+contain at least one consonant
+None of the consonant‑starting words contain vowels, so:
+
+<empty>
+
+==================================
+Final Output Summary
+vowels.txt
+<empty>
+=======================================
+consonants.txt
+sky
+rhythm
+fly
+crypt
+=================================
+mixed.txt
+<empty>
+=================================
+
+
+
+
+
