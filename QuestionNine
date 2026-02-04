@@ -1,0 +1,83 @@
+Question 9 [6 Points]
+
+Write a C program to demonstrate zombie process prevention.
+• Create multiple child processes
+• Ensure terminated child processes do not remain zombies
+• Parent process should print the PID of each child it cleans upUse fork(), wait(), or waitpid().
+
+=============================
+---------------------------------------------
+
+C Program: Preventing Zombie Processes
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    int num_children = 5;
+    pid_t pid;
+
+    for (int i = 0; i < num_children; i++) {
+        pid = fork();
+
+        if (pid < 0) {
+            perror("fork failed");
+            exit(1);
+        }
+
+        if (pid == 0) {
+            // Child process
+            printf("Child %d started with PID %d\n", i + 1, getpid());
+            sleep(1);   // Simulate some work
+            exit(0);    // Child exits
+        }
+    }
+
+    // Parent process: clean up children
+    for (int i = 0; i < num_children; i++) {
+        pid_t cleaned = waitpid(-1, NULL, 0);  // Reap any child
+        if (cleaned > 0) {
+            printf("Parent cleaned up child with PID %d\n", cleaned);
+        }
+    }
+
+    printf("All children cleaned. No zombies remain.\n");
+    return 0;
+}
+=================================
+===============================================
+How this prevents zombies
+Each child exits normally.
+
+If the parent does not call wait() or waitpid(), the child becomes a zombie.
+
+The parent uses:
+waitpid(-1, NULL, 0)
+========================
+This means:
+
+-1 → wait for any child
+
+NULL → ignore exit status
+
+0 → block until a child exits
+
+Each terminated child is reaped immediately, so no zombie processes remain.
+
+=============================
+output
+
+Child 1 started with PID 1234
+Child 2 started with PID 1235
+Child 3 started with PID 1236
+Child 4 started with PID 1237
+Child 5 started with PID 1238
+Parent cleaned up child with PID 1234
+Parent cleaned up child with PID 1235
+Parent cleaned up child with PID 1236
+Parent cleaned up child with PID 1237
+Parent cleaned up child with PID 1238
+All children cleaned. No zombies remain.
+==========================================================================
