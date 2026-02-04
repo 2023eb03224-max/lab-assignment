@@ -1,0 +1,87 @@
+Question 4 [6 Points]
+
+Create a shell script emailcleaner.sh that processes emails.txt.
+• Extract all valid email addresses and store them in valid.txt
+• Extract invalid email addresses and store them in invalid.txt
+• Remove duplicate entries from valid.txtValid email format:<letters_and_digits>@<letters>.comUse grep, sort, uniq, and redirection.
+
+=================================
+#!/bin/bash
+
+# Valid email pattern:
+# letters/digits + @ + letters + .com
+valid_pattern='^[A-Za-z0-9]\+@[A-Za-z]\+\.com$'
+
+# Extract valid emails
+grep -E '^[A-Za-z0-9]+@[A-Za-z]+\.com$' emails.txt \
+    | sort | uniq > valid.txt
+
+# Extract invalid emails (everything NOT matching the valid pattern)
+grep -Ev '^[A-Za-z0-9]+@[A-Za-z]+\.com$' emails.txt \
+    | sort | uniq > invalid.txt
+===============================================================
+==============================================================
+
+
+Sample emails.txt
+john123@abc.com
+maria@server.com
+bademail@xyz
+@missinguser.com
+tom@123.com
+linda@mail.org
+john123@abc.com
+sam99@alpha.com
+wrong@@beta.com
+
+=============================
+Valid format required:
+letters_or_digits @ letters .com
+
+======================
+Valid emails match:
+^[A-Za-z0-9]+@[A-Za-z]+\.com$
+
+===============================
+Invalid emails are everything else.
+Duplicates removed from valid emails.
+
+=============================
+valid.txt (after sort + uniq)
+From the sample list, the valid ones are:
+
+john123@abc.com
+maria@server.com
+sam99@alpha.com
+Sorted and deduplicated:
+john123@abc.com
+maria@server.com
+sam99@alpha.com
+================================================
+
+
+invalid.txt
+Everything that does not match the valid pattern:
+bademail@xyz
+@missinguser.com
+tom@123.com
+linda@mail.org
+wrong@@beta.com
+======================================================
+Final Result
+valid.txt
+john123@abc.com
+maria@server.com
+sam99@alpha.com
+===============================================
+
+
+invalid.txt
+bademail@xyz
+@missinguser.com
+tom@123.com
+linda@mail.org
+wrong@@beta.com
+=========================================================
+
+
